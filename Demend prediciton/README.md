@@ -1,3 +1,6 @@
+"Demand prediction"this need to only be executed in the "GOOGLE COLAB" not in any compiler like Visual Studio . 
+
+
 Overview
 This ML predicts:
 - Fuel consumption
@@ -6,7 +9,7 @@ This ML predicts:
 - Historical peak hour demand
 
 Features
-- Predict fuel consumption using trip distance, duration, and passenger count.
+- Predict fuelThis is the code of the   consumption using trip distance, duration, and passenger count.
 - Estimate taxi demand for a specific pickup hour.
 - Calculate taxi fare using distance, duration, passenger count, longitude, and latitude.
 - Show historical demand for a specified hour.
