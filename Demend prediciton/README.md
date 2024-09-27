@@ -1,5 +1,5 @@
 Overview
-This project predicts:
+This ML predicts:
 - Fuel consumption
 - Taxi demand by hour
 - Taxi fare based on trip details and location
