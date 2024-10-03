@@ -1,4 +1,5 @@
 "Demand prediction"this need to only be executed in the "GOOGLE COLAB" not in any compiler like Visual Studio . 
+The successfully integrated with one dal and one dnn
 
 
 Overview
