@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car CO2 Emission Predictor</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #e0f7fa;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #007acc;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 100%;
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #bbb;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #007acc;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007acc;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #005f99;
+        }
+        #result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007acc;
+        }
+        .error {
+            color: #ff4757;
+        }
+    </style>
+</head>
+<body>
+    <h2>Car CO2 Emission Predictor</h2>
+    <div class="card">
+        <form id="carForm">
+            <label for="engine_size">Engine Size (cm³):</label>
+            <input  style="padding-left: 5px;"number id="engine_size" name="engine_size" required>
+
+            <label for="power_ps">Power (PS):</label>
+            <input style="padding-left: 5px;"number" id="power_ps" name="power_ps" required>
+
+            <label for="fuel">Fuel Type:</label>
+            <input style="padding: 5px;"text" id="fuel" name="fuel" required placeholder="e.g., Petrol, Diesel">
+
+            <label for="transmission">Transmission Type:</label>
+            <input style="padding: 5px;"text" id="transmission" name="transmission" required placeholder="e.g., Manual, Automatic">
+
+            <button type="button" onclick="predictCO2()">Predict CO2 Emission</button>
+        </form>
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+        async function predictCO2() {
+            const inputData = {
+                engine_size_cm3: document.getElementById("engine_size").value,
+                power_ps: document.getElementById("power_ps").value,
+                fuel: document.getElementById("fuel").value,
+                transmission_type: document.getElementById("transmission").value
+            };
+
+            try {
+                const response = await fetch('http://localhost:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(inputData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                document.getElementById("result").innerText = 
+                    `Predicted CO2 Emissions: ${result.predicted_co2_emissions.toFixed(2)} grams per kilometer`;
+                document.getElementById("result").classList.remove('error');
+            } catch (error) {
+                document.getElementById("result").innerText = 
+                    'Error: Unable to predict CO2 emissions. Please try again.';
+                document.getElementById("result").classList.add('error');
+                console.error('There was an error!', error);
+            }
+        }
+    </script>
+</body>
+</html>
