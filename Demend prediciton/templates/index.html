@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxi Prediction App</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #2c3e50;
+        }
+
+        h2 {
+            text-align: center;
+            color: #34495e;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="number"], input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus, input[type="text"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #e67e22;
+        }
+
+        h3 {
+            text-align: center;
+            margin-top: 20px;
+            color: #2980b9;
+        }
+
+        #fuel_result, #demand_result, #fare_result {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 20px;
+            color: #27ae60;
+        }
+
+        .chart-container {
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 600px) {
+            form {
+                width: 90%;
+            }
+        }
+
+        /* Additional styling for the body and headings */
+        header {
+            background-color: #3498db;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: #2c3e50;
+            color: white;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Taxi Prediction Application</h1>
+    </header>
+
+    <h2>Enter Trip Details for Prediction</h2>
+    <form>
+        <input type="number" id="trip_distance" placeholder="Trip Distance (miles)" required>
+        <input type="number" id="trip_duration" placeholder="Trip Duration (minutes)" required>
+        <input type="number" id="passenger_count" placeholder="Passenger Count" required>
+        <input type="number" id="pickup_hour" placeholder="Pickup Hour (0-23)" required>
+        <input type="number" id="pickup_longitude" placeholder="Pickup Longitude" required>
+        <input type="number" id="pickup_latitude" placeholder="Pickup Latitude" required>
+        
+        <button type="button" onclick="predictAll()">Predict All</button>
+    </form>
+
+    <h3>Results</h3>
+    <div id="fuel_result"></div>
+    <div id="demand_result"></div>
+    <div id="fare_result"></div>
+
+    <div class="chart-container">
+        <div id="chart"></div>
+    </div>
+
+    <script>
+        async function predictAll() {
+            const response = await fetch('/predict_all', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    trip_distance: parseFloat(document.getElementById('trip_distance').value),
+                    trip_duration: parseFloat(document.getElementById('trip_duration').value),
+                    passenger_count: parseInt(document.getElementById('passenger_count').value),
+                    pickup_hour: parseInt(document.getElementById('pickup_hour').value),
+                    pickup_longitude: parseFloat(document.getElementById('pickup_longitude').value),
+                    pickup_latitude: parseFloat(document.getElementById('pickup_latitude').value)
+                })
+            });
+            const result = await response.json();
+            document.getElementById('fuel_result').innerText = `Predicted Fuel Consumption: ${result.predicted_fuel_consumption} gallons`;
+            document.getElementById('demand_result').innerText = `Predicted Demand: ${result.predicted_demand} trips`;
+            document.getElementById('fare_result').innerText = `Predicted Fare: $${result.predicted_fare.toFixed(2)}`;
+
+            // Prepare data for Plotly
+            const data = [
+                {
+                    x: ['Fuel Consumption', 'Demand', 'Fare'],
+                    y: [
+                        result.predicted_fuel_consumption,
+                        result.predicted_demand,
+                        result.predicted_fare
+                    ],
+                    type: 'bar',
+                    marker: { color: ['#3498db', '#2ecc71', '#e74c3c'] }
+                }
+            ];
+
+            const layout = {
+                title: 'Prediction Results',
+                xaxis: { title: 'Prediction Type' },
+                yaxis: { title: 'Value' }
+            };
+
+            // Plot the chart
+            Plotly.newPlot('chart', data, layout);
+        }
+    </script>
+
+    <footer>
+        <p>&copy; 2024 Taxi Prediction Application. All rights reserved.</p>
+    </footer>
+</body>
+</html>
