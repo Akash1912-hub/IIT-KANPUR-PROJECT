@@ -41,7 +41,7 @@ def train_model():
     data = preprocess_data(data)
 
     # Sample the data (10% of the original)
-    sample_data = data.sample(frac=0.1, random_state=42)
+    sample_data = data.sample(frac=0.01, random_state=42)
 
     # Split the data
     X = sample_data.drop(columns=['DistanceFromStop'])

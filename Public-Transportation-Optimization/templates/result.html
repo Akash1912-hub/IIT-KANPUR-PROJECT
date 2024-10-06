@@ -8,7 +8,10 @@
 <body>
     <h1>Prediction Result</h1>
     <p>Predicted Distance from Stop: {{ predicted_distance }}</p>
-    <a href="/bus_route_map.html" target="_blank">View Route Map</a><br>
+    
+    <!-- Link to view the generated route map -->
+    <a href="{{ url_for('static', filename='bus_route_map.html') }}" target="_blank">View Route Map</a><br>
+    
     <a href="/">Back to Form</a>
 </body>
 </html>
