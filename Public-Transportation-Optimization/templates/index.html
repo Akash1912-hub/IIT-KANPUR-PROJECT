@@ -4,51 +4,129 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Distance Prediction</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            color: #2980b9;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="number"], input[type="email"], input[type="date"], input[type="time"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="date"]:focus, input[type="time"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        input[type="submit"] {
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 15px;
+            font-size: 18px;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #1f639b;
+        }
+
+        h2 {
+            text-align: center;
+            color: #27ae60;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 600px) {
+            form {
+                width: 90%;
+                padding: 15px;
+            }
+
+            h1, h2 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
 </head>
 <body>
     <h1>Predict Distance from Stop</h1>
     <form method="POST">
         <label for="DirectionRef">Direction Reference:</label>
-        <input type="text" id="DirectionRef" name="DirectionRef" value="0"><br>
+        <input type="text" id="DirectionRef" name="DirectionRef" value="0">
 
         <label for="PublishedLineName">Published Line Name:</label>
-        <input type="text" id="PublishedLineName" name="PublishedLineName" value="B8"><br>
+        <input type="text" id="PublishedLineName" name="PublishedLineName" value="B8">
 
         <label for="OriginName">Origin Name:</label>
-        <input type="text" id="OriginName" name="OriginName" value="4 AV/95 ST"><br>
+        <input type="text" id="OriginName" name="OriginName" value="4 AV/95 ST">
 
         <label for="OriginLat">Origin Latitude:</label>
-        <input type="text" id="OriginLat" name="OriginLat" value="40.616104"><br>
+        <input type="text" id="OriginLat" name="OriginLat" value="40.616104">
 
         <label for="OriginLong">Origin Longitude:</label>
-        <input type="text" id="OriginLong" name="OriginLong" value="-74.031143"><br>
+        <input type="text" id="OriginLong" name="OriginLong" value="-74.031143">
 
         <label for="DestinationName">Destination Name:</label>
-        <input type="text" id="DestinationName" name="DestinationName" value="BROWNSVILLE ROCKAWAY AV"><br>
+        <input type="text" id="DestinationName" name="DestinationName" value="BROWNSVILLE ROCKAWAY AV">
 
         <label for="DestinationLat">Destination Latitude:</label>
-        <input type="text" id="DestinationLat" name="DestinationLat" value="40.656048"><br>
+        <input type="text" id="DestinationLat" name="DestinationLat" value="40.656048">
 
         <label for="DestinationLong">Destination Longitude:</label>
-        <input type="text" id="DestinationLong" name="DestinationLong" value="-73.907379"><br>
+        <input type="text" id="DestinationLong" name="DestinationLong" value="-73.907379">
 
         <label for="VehicleLocationLat">Vehicle Location Latitude:</label>
-        <input type="text" id="VehicleLocationLat" name="VehicleLocationLat" value="40.635170"><br>
+        <input type="text" id="VehicleLocationLat" name="VehicleLocationLat" value="40.635170">
 
         <label for="VehicleLocationLong">Vehicle Location Longitude:</label>
-        <input type="text" id="VehicleLocationLong" name="VehicleLocationLong" value="-73.960803"><br>
+        <input type="text" id="VehicleLocationLong" name="VehicleLocationLong" value="-73.960803">
 
         <label for="ExpectedArrivalTime">Expected Arrival Time:</label>
-        <input type="text" id="ExpectedArrivalTime" name="ExpectedArrivalTime" value="2017-06-01 00:03:59"><br>
+        <input type="text" id="ExpectedArrivalTime" name="ExpectedArrivalTime" value="2017-06-01 00:03:59">
 
         <label for="ScheduledArrivalTime">Scheduled Arrival Time:</label>
-        <input type="text" id="ScheduledArrivalTime" name="ScheduledArrivalTime" value="24:06:14"><br>
+        <input type="text" id="ScheduledArrivalTime" name="ScheduledArrivalTime" value="24:06:14">
 
         <label for="hour">Hour:</label>
-        <input type="text" id="hour" name="hour" value="0"><br>
+        <input type="text" id="hour" name="hour" value="0">
 
         <label for="day">Day of the Week:</label>
-        <input type="text" id="day" name="day" value="0"><br>
+        <input type="text" id="day" name="day" value="0">
 
         <input type="submit" value="Predict">
     </form>
