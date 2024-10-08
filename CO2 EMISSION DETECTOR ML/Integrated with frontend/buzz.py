@@ -1,14 +1,17 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import joblib
 import pandas as pd
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app)
 
-# Load the saved model and preprocessor
 model = joblib.load('linear_regression_model.pkl')
 preprocessor = joblib.load('preprocessor.pkl')
+
+@app.route('/')
+def index():
+    return render_template('akash.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
