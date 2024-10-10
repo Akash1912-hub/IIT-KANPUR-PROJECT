@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    
+</head>
+<body>
+    <h1>Prediction Result</h1>
+    <p>Predicted Distance from Stop: {{ predicted_distance }}</p>
+    
+    <!-- Link to view the generated route map -->
+    <img src="../map.png" alt="">
+    <a href="{{ url_for('static', filename='bus_route_map.html') }}" target="_blank"><button>View Route Map</button></a><br>
+   
+    
+    <a href="/"><button class="btn">Back to Form</button></a>
+    
+    <style>
+        body{
+            background-color: antiquewhite;
+        }
+        h1{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          
+            text-shadow: 0px 0px 5px rgb(145, 146, 146);
+        }
+        p{
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            font-size: x-large;
+            color: rgb(248, 145, 10);
+        }
+        button{
+            text-decoration: none;
+            display: flex;
+            justify-content:center;
+            border: 2px solid black;
+            width: 400px;
+            padding: 12px;
+            margin-left: 180px;
+           background-color: rgb(9, 222, 41);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+
+        }
+        .btn{
+            background-color: rgb(234, 161, 3);
+            color: rgb(14, 14, 13);
+            margin-top: 10px;
+        }
+        a{
+            text-decoration: none;
+         }
+         img{
+            margin-left: 280px;
+            margin-top: -50px;
+            width: 200px;
+         }
+    </style>
+</body>
+</html>
