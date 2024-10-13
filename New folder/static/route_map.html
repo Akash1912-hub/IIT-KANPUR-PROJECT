@@ -1,0 +1,59 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+        <title>Map</title>
+        <script src="https://api.mapbox.com/mapbox-gl-js/v2.11.0/mapbox-gl.js"></script>
+        <link href="https://api.mapbox.com/mapbox-gl-js/v2.11.0/mapbox-gl.css" rel="stylesheet" />
+        <style>
+            body { margin: 0; padding: 0; }
+            #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        </style>
+    </head>
+    <body>
+        <div id="map"></div>
+        <script>
+            mapboxgl.accessToken = 'pk.eyJ1IjoiZ29rdWxha3Jpc2huYW4tNjEwIiwiYSI6ImNtMjdkNWxpaDFiZWoyaXM2czRhZTY0cGoifQ.hv7LUuaUken_pJ88fsvYKA';
+            const map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/streets-v11',
+                center: [-0.1278, 51.5074],
+                zoom: 10
+            });
+
+            const marker1 = new mapboxgl.Marker({ color: 'green' })
+                .setLngLat([-0.1278, 51.5074])
+                .setPopup(new mapboxgl.Popup().setHTML('<h3>Current Location: London</h3>'))
+                .addTo(map);
+
+            const marker2 = new mapboxgl.Marker({ color: 'red' })
+                .setLngLat([-0.4230304076201782, 51.89107295])
+                .setPopup(new mapboxgl.Popup().setHTML('<h3>Destination: Luton, England, United Kingdom<br>Distance: 29.40 miles<br>Duration: 29.40 mins<br>Fare: $76.50<br>Fuel: 1.96 gallons</h3>'))
+                .addTo(map);
+
+            const route = [[-0.1278, 51.5074], [-0.4230304076201782, 51.89107295]];
+            map.on('load', function () {
+                map.addSource('route', {
+                    'type': 'geojson',
+                    'data': {
+                        'type': 'Feature',
+                        'geometry': {
+                            'type': 'LineString',
+                            'coordinates': route
+                        }
+                    }
+                });
+                map.addLayer({
+                    'id': 'route',
+                    'type': 'line',
+                    'source': 'route',
+                    'layout': { 'line-join': 'round', 'line-cap': 'round' },
+                    'paint': { 'line-color': '#888', 'line-width': 8 }
+                });
+            });
+        </script>
+    </body>
+    </html>
+    

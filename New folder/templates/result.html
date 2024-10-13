@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Results</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Trip Results</h1>
+        <div class="mt-4">
+            <p><strong>Destination:</strong> {{ destination }}</p>
+            <p><strong>Distance:</strong> {{ distance }} miles</p>
+            <p><strong>Duration:</strong> {{ duration }} minutes</p>
+            <p><strong>Fare:</strong> ${{ fare }}</p>
+            <p><strong>Fuel Consumption:</strong> {{ fuel_consumption }} gallons</p>
+            <h2 class="mt-4">Route Map</h2>
+            <iframe src="{{ url_for('static', filename='route_map.html') }}" width="100%" height="500px" frameborder="0"></iframe>
+            <br>
+            <a href="/" class="btn btn-secondary mt-3">Plan Another Trip</a>
+        </div>
+    </div>
+</body>
+</html>

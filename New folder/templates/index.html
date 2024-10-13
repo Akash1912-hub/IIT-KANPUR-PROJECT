@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Planner</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Trip Planner</h1>
+        <form action="/plan_trip" method="post" class="mt-4">
+            <div class="form-group">
+                <label for="destination">Destination:</label>
+                <input type="text" class="form-control" id="destination" name="destination" required>
+            </div>
+            <div class="form-group">
+                <label for="passenger_count">Number of Passengers:</label>
+                <input type="number" class="form-control" id="passenger_count" name="passenger_count" required min="1">
+            </div>
+            <button type="submit" class="btn btn-primary">Plan Trip</button>
+        </form>
+    </div>
+</body>
+</html>
