@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route Optimizer with Leaflet</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+        body {
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <h1>Route Optimizer</h1>
+    <input type="text" id="origin" placeholder="Enter starting point (e.g., Gateway of India, Mumbai)">
+    <input type="text" id="destination" placeholder="Enter destination (e.g., India Gate, New Delhi)">
+    <button onclick="optimizeRoute()">Get Route</button>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script>
+        const map = L.map('map').setView([20.5937, 78.9629], 5); // Default location (India)
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+
+        let routingControl;
+
+        function geocode(address) {
+            return fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        return {
+                            lat: data[0].lat,
+                            lng: data[0].lon
+                        };
+                    } else {
+                        throw new Error("Location not found");
+                    }
+                });
+        }
+
+        function optimizeRoute() {
+            const originName = document.getElementById("origin").value;
+            const destinationName = document.getElementById("destination").value;
+
+            Promise.all([geocode(originName), geocode(destinationName)])
+                .then(results => {
+                    const [origin, destination] = results;
+
+                    if (routingControl) {
+                        map.removeControl(routingControl);
+                    }
+
+                    routingControl = L.Routing.control({
+                        waypoints: [
+                            L.latLng(origin.lat, origin.lng),
+                            L.latLng(destination.lat, destination.lng)
+                        ],
+                        routeWhileDragging: true, // Enable rerouting while dragging
+                        createMarker: function() { return null; } // Disable markers
+                    }).addTo(map);
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
+        }
+    </script>
+</body>
+</html>
