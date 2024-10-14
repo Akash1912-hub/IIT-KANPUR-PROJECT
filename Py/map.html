@@ -1,0 +1,30 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+        <title>Map</title>
+        <script src="https://api.mapbox.com/mapbox-gl-js/v2.11.0/mapbox-gl.js"></script>
+        <link href="https://api.mapbox.com/mapbox-gl-js/v2.11.0/mapbox-gl.css" rel="stylesheet" />
+        <style>
+            body { margin: 0; padding: 0; }
+            #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        </style>
+    </head>
+    <body>
+        <div id="map"></div>
+        <script>
+            mapboxgl.accessToken = 'pk.eyJ1IjoiZ29rdWxha3Jpc2huYW4tNjEwIiwiYSI6ImNtMjdkNWxpaDFiZWoyaXM2czRhZTY0cGoifQ.hv7LUuaUken_pJ88fsvYKA';
+            const map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/streets-v11',
+                center: [-0.1278, 51.5074],
+                zoom: 12
+            });
+            const marker1 = new mapboxgl.Marker().setLngLat([-0.1278, 51.5074]).addTo(map);
+            const marker2 = new mapboxgl.Marker().setLngLat([78.1140983, 9.9261153]).addTo(map);
+        </script>
+    </body>
+    </html>
+    

@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CO2 Emission Prediction</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            background-color: #1a73e8;
+            color: white;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 1.5em;
+            margin-right: 700px;
+        }
+
+        .menu-btn {
+            cursor: pointer;
+        }
+
+        .menu-btn__burger {
+            width: 25px;
+            height: 3px;
+            background: #fff;
+            border-radius: 5px;
+            transition: all .5s ease-in-out;
+        }
+
+        .menu-btn__burger::before,
+        .menu-btn__burger::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 3px;
+            background: #fff;
+            border-radius: 5px;
+            transition: all .5s ease-in-out;
+        }
+
+        .menu-btn__burger::before {
+            transform: translateY(-8px);
+        }
+
+        .menu-btn__burger::after {
+            transform: translateY(8px);
+        }
+
+        .menu-btn.open .menu-btn__burger {
+            transform: translateX(-50px);
+            background: transparent;
+        }
+
+        .menu-btn.open .menu-btn__burger::before {
+            transform: rotate(45deg) translate(35px, -35px);
+        }
+
+        .menu-btn.open .menu-btn__burger::after {
+            transform: rotate(-45deg) translate(35px, 35px);
+        }
+
+        .sidebar {
+            width: 200px;
+            height: 100vh;
+            background-color: #f2f5f9;
+            position: fixed;
+            top: 0;
+            left: 0;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-100%); /* Hidden initially */
+        }
+
+        .sidebar.active {
+            transform: translateX(0); /* Show when active */
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 20px 0;
+        }
+
+        .sidebar ul li a {
+            color: #333;
+            text-decoration: none;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar ul li a:hover {
+            color: #0e56ca;
+        }
+
+        .content {
+            margin-left: 100px;
+            padding: 20px;
+            transition: margin-left 0.3s;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #0875ea;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #16a085;
+        }
+
+        h2 {
+            margin-top: 20px;
+            color: #333;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .footer-section {
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 10px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            margin: 5px 0;
+        }
+
+        .footer-section ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .footer-bottom {
+            margin-top: 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: fixed;
+                top: 0;
+                left: 0;
+                transform: translateX(-100%); /* Hidden initially */
+            }
+
+            .sidebar.active {
+                transform: translateX(0); /* Show when active */
+            }
+
+            .sidebar ul {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .logo {
+                margin-right: 0;
+                font-size: 1.2em;
+            }
+
+            .sidebar ul {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            form {
+                padding: 15px;
+            }
+
+            input[type="number"],
+            select {
+                font-size: 0.9em;
+            }
+
+            button {
+                width: 100%;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="menu-btn" id="menuBtn">
+            <div class="menu-btn__burger"></div>
+        </div>
+        <div class="logo">TransportOptimize</div>
+    </nav>
+
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li><a href="#maintenance"><i class="fas fa-tools"></i> Maintenance</a></li>
+            <li><a href="intex.html"><i class="fas fa-chart-line"></i> Demand</a></li>
+            <li><a href="/dashboard"" id="co2-link"><i class="fas fa-home"></i> Dashboard</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <h1>CO2 Emission Prediction</h1>
+        <form id="co2-form">
+            <label for="engine_size_cm3">Engine Size (cm³):</label>
+            <input type="number" id="engine_size_cm3" required><br>
+            
+            <label for="power_ps">Power (PS):</label>
+            <input type="number" id="power_ps" required><br>
+            
+            <label for="fuel">Fuel Type:</label>
+            <select id="fuel" required>
+                <option value="" disabled selected>Select Fuel Type</option>
+                <option value="petrol">Petrol</option>
+                <option value="diesel">Diesel</option>
+            </select><br>
+            
+            <label for="transmission_type">Transmission Type:</label>
+            <select id="transmission_type" required>
+                <option value="" disabled selected>Select Transmission Type</option>
+                <option value="automatic">Automatic</option>
+                <option value="manual">Manual</option>
+            </select><br>
+            
+            <button type="submit">Predict CO2 Emissions</button>
+        </form>
+        <h2 id="result"></h2>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@transportoptimize.com</p>
+                <p>Phone: +1 (555) 123-4567</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 TransportOptimize. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        $(document).ready(function () {
+            let sidebarCollapsed = false;
+
+            // Toggle sidebar collapse
+            $('#menuBtn').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+
+            // Hide sidebar when clicking outside on mobile view
+            $(document).on('click', function (event) {
+                if (!$(event.target).closest('#sidebar, #menuBtn').length && $('#sidebar').hasClass('active')) {
+                    $('#sidebar').removeClass('active');
+                }
+            });
+        });
+
+        $('#co2-form').on('submit', function(e) {
+            e.preventDefault();
+            const data = {
+                engine_size_cm3: parseFloat($('#engine_size_cm3').val()),
+                power_ps: parseFloat($('#power_ps').val()),
+                fuel: $('#fuel').val(),
+                transmission_type: $('#transmission_type').val()
+            };
+
+            $.ajax({
+                type: 'POST',
+                url:'http://127.0.0.1:8000/predict',  // Update to the correct URL
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    $('#result').text(`Predicted CO2 Emissions: ${response.predicted_co2_emissions.toFixed(2)} g/km`);
+                },
+                error: function() {
+                    $('#result').text('Error in prediction');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+<!--
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CO2 Emission Prediction</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 1.5em;
+        }
+
+        .menu-btn {
+            cursor: pointer;
+        }
+
+        .sidebar {
+            width: 200px; /* Reduced width */
+            height: 100vh;
+            background-color: #2c3e50;
+            position: fixed;
+            top: 0;
+            left: 0;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: width 0.3s, transform 0.3s; /* Smooth transition for width and transform */
+            overflow: hidden; /* Prevent overflow */
+        }
+
+        .sidebar.collapsed {
+            width: 60px; /* Width when collapsed */
+            transform: translateX(-140px); /* Move sidebar off-screen */
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 20px 0;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar ul li a:hover {
+            color: #1abc9c;
+        }
+
+        .content {
+            margin-left: 220px; /* Adjusted margin to match reduced sidebar width */
+            padding: 20px;
+            transition: margin-left 0.3s; /* Smooth transition for margin adjustment */
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #1abc9c;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #16a085;
+        }
+
+        h2 {
+            margin-top: 20px;
+            color: #333;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .footer-section {
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 10px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            margin: 5px 0;
+        }
+
+        .footer-section ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .footer-bottom {
+            margin-top: 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%; /* Full width for mobile */
+                height: auto;
+                position: relative;
+            }
+
+            .sidebar ul {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="logo">TransportOptimize</div>
+        <div class="menu-btn" id="menuBtn">
+            <i class="fas fa-bars"></i>
+        </div>
+    </nav>
+
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li><a href="#maintenance"><i class="fas fa-tools"></i> Maintenance</a></li>
+            <li><a href="#demand"><i class="fas fa-chart-line"></i> Demand</a></li>
+            <li><a href="co2_prediction.html" id="co2-link"><i class="fas fa-leaf"></i> CO2</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <h1>CO2 Emission Prediction</h1>
+        <form id="co2-form">
+            <label for="engine_size_cm3">Engine Size (cm³):</label>
+            <input type="number" id="engine_size_cm3" required>
+
+            <label for="power_ps">Power (PS):</label>
+            <input type="number" id="power_ps" required>
+
+            <label for="fuel">Fuel Type:</label>
+            <select id="fuel" required>
+                <option value="" disabled selected>Select Fuel Type</option>
+                <option value="petrol">Petrol</option>
+                <option value="diesel">Diesel</option>
+            </select>
+
+            <label for="transmission_type">Transmission Type:</label>
+            <select id="transmission_type" required>
+                <option value="" disabled selected>Select Transmission Type</option>
+                <option value="automatic">Automatic</option>
+                <option value="manual">Manual</option>
+            </select>
+
+            <button type="submit">Predict CO2 Emissions</button>
+        </form>
+        <h2 id="result"></h2>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@transportoptimize.com</p>
+                <p>Phone: +1 (555) 123-4567</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 TransportOptimize. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        $(document).ready(function () {
+            let sidebarCollapsed = false;
+
+            // Toggle sidebar collapse
+            $('#menuBtn').on('click', function () {
+                $('#sidebar').toggleClass('collapsed');
+                sidebarCollapsed = !sidebarCollapsed;
+                adjustContentMargin();
+            });
+
+            // Hide sidebar when clicking outside
+            $(document).on('click', function (event) {
+                if (!$(event.target).closest('#sidebar, #menuBtn').length && !sidebarCollapsed) {
+                    $('#sidebar').addClass('collapsed');
+                    sidebarCollapsed = true;
+                    adjustContentMargin();
+                }
+            });
+
+            function adjustContentMargin() {
+                if (sidebarCollapsed) {
+                    $('.content').css('margin-left', '80px'); // Adjust margin when collapsed
+                } else {
+                    $('.content').css('margin-left', '220px'); // Restore margin when expanded
+                }
+            }
+        });
+
+        $('#co2-form').on('submit', function (e) {
+            e.preventDefault();
+            const data = {
+                engine_size_cm3: parseFloat($('#engine_size_cm3').val()),
+                power_ps: parseFloat($('#power_ps').val()),
+                fuel: $('#fuel').val(),
+                transmission_type: $('#transmission_type').val()
+            };
+
+            $.ajax({
+                type: 'POST',
+                url:'http://127.0.0.1:8000/predict', 
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    $('#result').text(`Predicted CO2 Emissions: ${response.predicted_emission} g/km`);
+                },
+                error: function (error) {
+                    $('#result').text('Error predicting CO2 emissions.');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
+-->

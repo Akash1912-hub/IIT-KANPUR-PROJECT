@@ -1,0 +1,687 @@
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Page Map with Floating Inputs</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+        #map {
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .input-container {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 90%;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            background-color: #fff;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .input-icon {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .input-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+        input[type="text"] {
+            flex-grow: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            padding: 10px;
+        }
+        .swap-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            margin-left: 10px;
+        }
+        .swap-button svg {
+            width: 20px;
+            height: 20px;
+        }
+        button {
+            width: 100%;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px;
+            text-align: center;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1765cc;
+        }
+        .error {
+            color: #d93025;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .leaflet-routing-container {
+            background-color: white;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .leaflet-routing-alt {
+            max-height: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div class="input-container">
+        <div class="input-group">
+            <div class="input-icon">
+                <svg fill="#1a73e8" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="8"/>
+                </svg>
+            </div>
+            <input type="text" id="origin" placeholder="Your location" aria-label="Starting point">
+        </div>
+        <div class="input-group">
+            <div class="input-icon">
+                <svg fill="#d93025" viewBox="0 0 24 24">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
+            </div>
+            <input type="text" id="destination" placeholder="Choose destination" aria-label="Destination">
+            <button class="swap-button" onclick="swapLocations()" aria-label="Swap locations">
+                <svg viewBox="0 0 24 24" fill="#5f6368">
+                    <path d="M16 17.01V10h-2v7.01h-3L15 21l4-3.99h-3zM9 3L5 6.99h3V14h2V6.99h3L9 3z"/>
+                </svg>
+            </button>
+        </div>
+        <button onclick="optimizeRoute()">Get directions</button>
+        <p id="error" class="error" role="alert" aria-live="assertive"></p>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <script>
+        let map = L.map('map').setView([20.5937, 78.9629], 5);
+        let routingControl;
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        async function geocode(address) {
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
+                const data = await response.json();
+                if (data.length > 0) {
+                    return {
+                        lat: parseFloat(data[0].lat),
+                        lng: parseFloat(data[0].lon)
+                    };
+                } else {
+                    throw new Error("Location not found");
+                }
+            } catch (error) {
+                throw new Error("Geocoding failed");
+            }
+        }
+
+        async function optimizeRoute() {
+            const originInput = document.getElementById("origin");
+            const destinationInput = document.getElementById("destination");
+            const errorElement = document.getElementById("error");
+
+            try {
+                errorElement.textContent = "";
+                const [origin, destination] = await Promise.all([
+                    geocode(originInput.value),
+                    geocode(destinationInput.value)
+                ]);
+
+                if (routingControl) {
+                    map.removeControl(routingControl);
+                }
+
+                routingControl = L.Routing.control({
+                    waypoints: [
+                        L.latLng(origin.lat, origin.lng),
+                        L.latLng(destination.lat, destination.lng)
+                    ],
+                    routeWhileDragging: true,
+                    lineOptions: {
+                        styles: [{ color: '#1a73e8', weight: 6 }]
+                    },
+                    show: true,
+                    addWaypoints: true,
+                    draggableWaypoints: true,
+                    fitSelectedRoutes: true,
+                    showAlternatives: false
+                }).addTo(map);
+
+                routingControl.on('routeselected', function(e) {
+                    var route = e.route;
+                    console.log('Selected route:', route);
+                });
+
+                map.fitBounds([
+                    [origin.lat, origin.lng],
+                    [destination.lat, destination.lng]
+                ]);
+
+                toggleDirectionButton(false); // Hide the button when route is displayed
+            } catch (error) {
+                errorElement.textContent = "Unable to find one or both locations. Please check your input and try again.";
+            }
+        }
+
+        function swapLocations() {
+            const originInput = document.getElementById("origin");
+            const destinationInput = document.getElementById("destination");
+            [originInput.value, destinationInput.value] = [destinationInput.value, originInput.value];
+            toggleDirectionButton(true);
+        }
+
+        function toggleDirectionButton(show) {
+            const directionButton = document.querySelector('button[onclick="optimizeRoute()"]');
+            const routingContainer = document.querySelector('.leaflet-routing-container');
+            directionButton.style.display = show ? 'block' : 'none';
+            if (routingContainer) {
+                routingContainer.style.display = show ? 'none' : 'block';
+            }
+        }
+
+        document.getElementById("origin").addEventListener("input", () => toggleDirectionButton(true));
+        document.getElementById("destination").addEventListener("input", () => toggleDirectionButton(true));
+    </script>
+</body>
+</html>-->
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Full Page Map with Floating Inputs</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+
+  <style>
+
+    body, html {
+
+      margin: 0;
+
+      padding: 0;
+
+      height: 100%;
+
+      font-family: Arial, sans-serif;
+
+    }
+
+    #map {
+
+      height: 100%;
+
+      width: 100%;
+
+      position: absolute;
+
+      top: 0;
+
+      left: 0;
+
+    }
+
+    .input-container {
+
+      position: absolute;
+
+      top: 10px;
+
+      left: 50%;
+
+      transform: translateX(-50%);
+
+      z-index: 1000;
+
+      background-color: rgba(255, 255, 255, 0.9);
+
+      padding: 10px;
+
+      border-radius: 8px;
+
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+
+      max-width: 400px;
+
+      width: 90%;
+
+    }
+
+    .input-group {
+
+      display: flex;
+
+      align-items: center;
+
+      margin-bottom: 10px;
+
+      background-color: #fff;
+
+      border-radius: 4px;
+
+      overflow: hidden;
+
+    }
+
+    .input-icon {
+
+      padding: 10px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+    }
+
+    .input-icon svg {
+
+      width: 20px;
+
+      height: 20px;
+
+    }
+
+    input[type="text"] {
+
+      flex-grow: 1;
+
+      border: none;
+
+      outline: none;
+
+      font-size: 16px;
+
+      padding: 10px;
+
+    }
+
+    .swap-button {
+
+      background: none;
+
+      border: none;
+
+      cursor: pointer;
+
+      padding: 5px;
+
+      margin-left: 10px;
+
+    }
+
+    .swap-button svg {
+
+      width: 20px;
+
+      height: 20px;
+
+    }
+
+    button {
+
+      width: 100%;
+
+      background-color: #1a73e8;
+
+      color: white;
+
+      border: none;
+
+      padding: 10px;
+
+      text-align: center;
+
+      font-size: 16px;
+
+      cursor: pointer;
+
+      border-radius: 4px;
+
+      transition: background-color 0.3s;
+
+    }
+
+    button:hover {
+
+      background-color: #1765cc;
+
+    }
+
+    .error {
+
+      color: #d93025;
+
+      margin-top: 10px;
+
+      font-size: 14px;
+
+    }
+
+    .leaflet-routing-container {
+
+      background-color: white;
+
+      padding: 10px;
+
+      margin-top: 10px;
+
+      border-radius: 5px;
+
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+
+      max-height: 300px;
+
+      overflow-y: auto;
+
+    }
+
+    .leaflet-routing-alt {
+
+      max-height: none;
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div id="map"></div>
+
+  <div class="input-container">
+
+    <div class="input-group">
+
+      <div class="input-icon">
+
+        <svg fill="#1a73e8" viewBox="0 0 24 24">
+
+          <circle cx="12" cy="12" r="8"/>
+
+        </svg>
+
+      </div>
+
+      <input type="text" id="origin" placeholder="Your location" aria-label="Starting point">
+
+    </div>
+
+    <div class="input-group">
+
+      <div class="input-icon">
+
+        <svg fill="#d93025" viewBox="0 0 24 24">
+
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+
+        </svg>
+
+      </div>
+
+      <input type="text" id="destination" placeholder="Choose destination" aria-label="Destination">
+
+      <button class="swap-button" onclick="swapLocations()" aria-label="Swap locations">
+
+        <svg viewBox="0 0 24 24" fill="#5f6368">
+
+          <path d="M16 17.01V10h-2v7.01h-3L15 21l4-3.99h-3zM9 3L5 6.99h3V14h2V6.99h3L9 3z"/>
+
+        </svg>
+
+      </button>
+
+    </div>
+
+    <button onclick="optimizeRoute()">Get directions</button>
+
+    <p id="error" class="error" role="alert" aria-live="assertive"></p>
+
+  </div>
+
+
+
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+  <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+
+  <script>
+
+    let map = L.map('map').setView([20.5937, 78.9629], 5);
+
+    let routingControl;
+
+
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+
+    }).addTo(map);
+
+
+
+    async function geocode(address) {
+
+      try {
+
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
+
+        const data = await response.json();
+
+        if (data.length > 0) {
+
+          return {
+
+            lat: parseFloat(data[0].lat),
+
+            lng: parseFloat(data[0].lon)
+
+          };
+
+        } else {
+
+          throw new Error("Location not found");
+
+        }
+
+      } catch (error) {
+
+        throw new Error("Geocoding failed");
+
+      }
+
+    }
+
+
+
+    async function optimizeRoute() {
+
+      const originInput = document.getElementById("origin");
+
+      const destinationInput = document.getElementById("destination");
+
+      const errorElement = document.getElementById("error");
+
+
+
+      try {
+
+        errorElement.textContent = "";
+
+        const [origin, destination] = await Promise.all([
+
+          geocode(originInput.value),
+
+          geocode(destinationInput.value)
+
+        ]);
+
+
+
+        if (routingControl) {
+
+          map.removeControl(routingControl);
+
+        }
+
+
+
+        routingControl = L.Routing.control({
+
+          waypoints: [
+
+            L.latLng(origin.lat, origin.lng),
+
+            L.latLng(destination.lat, destination.lng)
+
+          ],
+
+          routeWhileDragging: true,
+
+          lineOptions: {
+
+            styles: [{ color: '#1a73e8', weight: 6 }]
+
+          },
+
+          show: true,
+
+          addWaypoints: true,
+
+          draggableWaypoints: true,
+
+          fitSelectedRoutes: true,
+
+          showAlternatives: false
+
+        }).addTo(map);
+
+
+
+        routingControl.on('routeselected', function(e) {
+
+          var route = e.route;
+
+          console.log('Selected route:', route);
+
+        });
+
+
+
+        map.fitBounds([
+
+          [origin.lat, origin.lng],
+
+          [destination.lat, destination.lng]
+
+        ]);
+
+
+
+        toggleDirectionButton(false); // Hide the button when route is displayed
+
+      } catch (error) {
+
+        errorElement.textContent = "Unable to find one or both locations. Please check your input and try again.";
+
+      }
+
+    }
+
+
+
+    function swapLocations() {
+
+      const originInput = document.getElementById("origin");
+
+      const destinationInput = document.getElementById("destination");
+
+      [originInput.value, destinationInput.value] = [destinationInput.value, originInput.value];
+
+      toggleDirectionButton(true);
+
+    }
+
+
+
+    function toggleDirectionButton(show) {
+
+      const directionButton = document.querySelector('button[onclick="optimizeRoute()"]');
+
+      const routingContainer = document.querySelector('.leaflet-routing-container');
+
+      directionButton.style.display = show ? 'block' : 'none';
+
+      if (routingContainer) {
+
+        routingContainer.style.display = show ? 'none' : 'block';
+
+      }
+
+    }
+
+
+
+    document.getElementById("origin").addEventListener("input", () => toggleDirectionButton(true));
+
+    document.getElementById("destination").addEventListener("input", () => toggleDirectionButton(true));
+
+  </script>
+
+</body>
+
+</html>

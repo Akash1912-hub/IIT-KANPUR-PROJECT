@@ -1,0 +1,29 @@
+{
+    "face_count": {
+      "face_count": 1
+    },
+    "test": {
+      "connection": "Hello Firebase"
+    },
+    "vehicle_count": {
+      "vehicle_count": 2
+    },
+    "vehicle_info": {
+      "engineering_type": "manual"
+    },
+    "vehicle_data": {
+      "Acceleration": 0.60769,
+      "Brake Pressure": 0,
+      "CO2 PPM": 0,
+      "Car ID": "CAR_001",
+      "Demand Count": 0,
+      "Latitude": "0.000000",
+      "Longitude": "0.000000",
+      "RPM": 0,
+      "MQ135_sensor": {
+        "reading": 400, 
+        "status": "safe" 
+      }
+    }
+  }
+  

@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransportOptimize Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+    <style>
+        /* Base Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        /* Navbar */
+        nav {
+            background-color: #1a73e8;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-right: 800px;
+        }
+
+        .menu-btn {
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            transition: all .5s ease-in-out;
+        }
+
+        .menu-btn__burger {
+            width: 25px;
+            height: 3px;
+            background: #fff;
+            border-radius: 5px;
+            transition: all .5s ease-in-out;
+        }
+
+        .menu-btn__burger::before,
+        .menu-btn__burger::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 3px;
+            background: #fff;
+            border-radius: 5px;
+            transition: all .5s ease-in-out;
+        }
+
+        .menu-btn__burger::before {
+            transform: translateY(-8px);
+        }
+
+        .menu-btn__burger::after {
+            transform: translateY(8px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background-color: #fff;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+            margin-top: -20px;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 2rem 0;
+        }
+
+        .sidebar ul li {
+            padding: 1rem 2rem;
+        }
+
+        .sidebar ul li a {
+            color: #333;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .sidebar ul li a:hover {
+            color: #1a73e8;
+        }
+
+        /* Content Section */
+        .content {
+            padding: 20px;
+            margin-top: 100px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .content h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 80px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .input-container img {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 50px;
+            filter: drop-shadow(0px 0px 20px);
+        }
+
+        .input-container input {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .submit-btn {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+
+        /* Real-Time Data Section */
+        .real-time-data {
+            margin-top: 30px;
+            width: 100%;
+            margin-left: 50px;
+            margin-top: 80px;
+        }
+
+        .real-time-data table {
+        
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .real-time-data th,
+        .real-time-data td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .real-time-data th {
+            background-color: #f4f4f4;
+        }
+
+        /* Chatbot Icon */
+        .chatbot-icon {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #3498db;
+            color: white;
+            padding: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* About Us Section */
+        .about-us {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            margin-top: 100px;
+            width: 100%;
+        }
+
+        .about-us h2 {
+            color: #1a73e8;
+            margin-bottom: 1rem;
+        }
+
+        .about-us p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #2d3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            flex-wrap: wrap;
+        }
+
+        .footer-section {
+            width: 30%;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 15px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-section ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+        }
+
+        .footer-bottom {
+            margin-top: 20px;
+            border-top: 1px solid #34495e;
+            padding-top: 10px;
+        }
+
+        .social-icons a {
+            margin-right: 10px;
+            color: #ecf0f1;
+        }
+
+        .social-icons a:hover {
+            color: #3498db;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .input-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .sidebar {
+                width: 200px;
+            }
+
+            .sidebar ul li {
+                padding: 10px 1rem;
+            }
+
+            .footer-section {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav {
+                padding: 0.5rem;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .submit-btn {
+                width: 100%;
+            }
+
+            .input-container img {
+                max-width: 100%;
+                width: auto;
+            }
+
+            .sidebar {
+                margin-top: -50px;
+                width: 180px;
+            }
+
+            .content h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="menu-btn" id="menuBtn">
+            <div class="menu-btn__burger"></div>
+        </div>
+        <div class="logo">TransportOptimize</div>
+    </nav>
+
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li><a href="#maintenance"><i class="fas fa-tools"></i> Maintenance</a></li>
+            <li><a href="intex.html"><i class="fas fa-chart-line"></i> Demand</a></li>
+            <li><a href="{{ url_for('co2_prediction') }}" id="co2-link"><i class="fas fa-leaf"></i> CO2</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <div class="input-container">
+            <div>
+                <img src="
+                https://www.google.com/imgres?imgurl=https%3A%2F%2Fwww.svgrepo.com%2Fshow%2F36472%2Fdriver.svg&tbnid=mgvnCWbuzVbXuM&vet=1&imgrefurl=https%3A%2F%2Fwww.svgrepo.com%2Fsvg%2F83463%2Fdriver&docid=4uI6gmMXCTyzSM&w=800&h=800&source=sh%2Fx%2Fim%2Fm5%2F3&kgs=142adcfccb36c06f&shem=abme%2Ctrie
+                " alt="Driver Image">
+            </div>
+            <div class="para">
+                <h1>Welcome to Driver Companion!</h1>
+                <h3>Are you looking for a map?</h3>
+                <h3>Here, you can efficiently plan and optimize routes for your deliveries,</h3>
+                <h3>reducing travel time, fuel costs, and ensuring timely arrivals.</h3>
+                <button class="submit-btn">Let's Go</button>
+            </div>
+        </div>
+
+        <div class="real-time-data">
+            <h2>Real-Time Data</h2>
+            <div id="realTimeContent">
+                <table border="1" id="data-table">
+                    <tr>
+                        <th>Field</th>
+                        <th>Value</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <section class="about-us">
+            <h2>About Us</h2>
+            <p>TransportOptimize is a cutting-edge platform designed to revolutionize the transportation industry...</p>
+        </section>
+    </div>
+
+    <div class="chatbot-icon" id="chatbotIcon">
+        <i class="fas fa-comments"></i>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@transportoptimize.com</p>
+                <p>Phone: +1 (555) 123-4567</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/dasboard">Home</a></li>
+                    <li><a href="#services">co2</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="/intex.html">Demand</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 TransportOptimize. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Sidebar toggle
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const chatbotIcon = document.getElementById('chatbotIcon');
+
+        menuBtn.addEventListener('click', function () {
+            menuBtn.classList.toggle('open');
+            sidebar.classList.toggle('active');
+        });
+
+        document.addEventListener('click', function (event) {
+            if (!sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+                sidebar.classList.remove('active');
+                menuBtn.classList.remove('open');
+            }
+        });
+
+        sidebar.addEventListener('click', function (event) {
+            event.stopPropagation();
+        });
+
+        chatbotIcon.addEventListener('click', function () {
+            alert('Chatbot functionality coming soon!');
+        });
+
+        // Socket.IO setup to receive real-time data from Firebase
+        var socket = io(); // Connect to the Socket.IO server
+
+        socket.on('firebase_update', function (firebase_data) {
+            const table = document.getElementById('data-table');
+            while (table.rows.length > 1) {
+                table.deleteRow(1);
+            }
+
+            for (const [key, value] of Object.entries(firebase_data)) {
+                const row = table.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                cell1.innerHTML = key;
+                cell2.innerHTML = value;
+            }
+        });
+
+        // Redirect to index.html of ml.py when Submit is clicked
+        document.querySelector('.submit-btn').addEventListener('click', function () {
+            const mlAppUrl = 'http://192.168.89.64:5001'; // Example: http://127.0.0.1:5000
+            window.location.href = mlAppUrl + '/';
+        });
+    </script>
+
+</body>
+
+</html>

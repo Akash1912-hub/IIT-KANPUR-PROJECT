@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicle Maintenance Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+      padding: 20px;
+      text-align: center;
+    }
+    .status {
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 5px;
+      color: white;
+    }
+    .safe {
+      background-color: green;
+    }
+    .risk {
+      background-color: red;
+    }
+    .vehicle-info {
+      margin-top: 30px;
+    }
+    .sensor-level {
+      margin-top: 15px;
+      padding: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Vehicle Maintenance Dashboard</h1>
+  
+  <h2>Vehicle Information</h2>
+  <div class="vehicle-info">
+    <p id="car-id">Car ID: Loading...</p>
+    <p id="acceleration">Acceleration: Loading...</p>
+    <p id="brake-pressure">Brake Pressure: Loading...</p>
+    <p id="engineering-type">Engineering Type: Loading...</p>
+  </div>
+  
+  <h2>MQ135 Sensor</h2>
+  <div class="sensor-level">
+    <p id="sensor-reading">Sensor Reading: Loading...</p>
+    <div id="sensor-status" class="status">Status: Loading...</div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js"></script>
+  
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "Your API Key",
+      authDomain: "Your Auth Domain",
+      databaseURL: "https://ml-transport-1-default-rtdb.firebaseio.com",
+      projectId: "ml-transport",
+      storageBucket: "Your storageBucket",
+      messagingSenderId: "Your messagingSenderId",
+      appId: "Your appId"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Fetch data from Firebase and update the website
+    db.ref("/vehicle_data").on("value", (snapshot) => {
+      const data = snapshot.val();
+      document.getElementById("car-id").innerText = "Car ID: " + data["Car ID"];
+      document.getElementById("acceleration").innerText = "Acceleration: " + data["Acceleration"];
+      document.getElementById("brake-pressure").innerText = "Brake Pressure: " + data["Brake Pressure"];
+      
+      // Display engineering type
+      db.ref("/vehicle_info").on("value", (snapshot) => {
+        const vehicleInfo = snapshot.val();
+        document.getElementById("engineering-type").innerText = "Engineering Type: " + vehicleInfo["engineering_type"];
+      });
+
+      // Display sensor reading and status
+      const sensor = data["MQ135_sensor"];
+      document.getElementById("sensor-reading").innerText = "Sensor Reading: " + sensor["reading"];
+      const statusDiv = document.getElementById("sensor-status");
+      statusDiv.innerText = "Status: " + sensor["status"];
+      
+      if (sensor["status"] === "safe") {
+        statusDiv.classList.add("safe");
+        statusDiv.classList.remove("risk");
+      } else {
+        statusDiv.classList.add("risk");
+        statusDiv.classList.remove("safe");
+      }
+    });
+  </script>
+</body>
+</html>
