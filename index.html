@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CO2 Emission Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        nav {
+            background: #333;
+            color: #fff;
+            padding: 10px 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">TransportOptimize</div>
+    </nav>
+
+    <div class="container">
+        <h1>CO2 Emission Prediction</h1>
+        <form id="co2Form">
+            <div class="input-group">
+                <label for="destination">Destination:</label>
+                <input type="text" id="destination" placeholder="Enter destination" required>
+            </div>
+            <button type="submit">Predict CO2 Emissions</button>
+        </form>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $('#co2Form').on('submit', function(event) {
+            event.preventDefault();
+            const destination = $('#destination').val();
+
+            $.ajax({
+                type: 'POST',
+                url: 'http://localhost:5000/predict',
+                contentType: 'application/json',
+                data: JSON.stringify({ destination }),
+                success: function(response) {
+                    $('#result').text(`Predicted CO2 Emissions: ${response.predicted_co2_emissions.toFixed(2)} g/km`);
+                },
+                error: function() {
+                    $('#result').text('Error in prediction');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

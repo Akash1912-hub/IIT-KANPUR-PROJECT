@@ -1,0 +1,786 @@
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransportOptimize Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .header {
+            background-color: #343a40;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .sidebar {
+            background-color: #343a40;
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding-top: 20px;
+        }
+
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #fff;
+            display: block;
+            font-size: 16px;
+        }
+
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+
+        .content {
+            margin-left: 260px;
+            padding: 20px;
+        }
+
+        .dashboard-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 23%;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .stat-card p {
+            font-size: 20px;
+            color: #6c757d;
+        }
+
+        .section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .section p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .logout-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Welcome to TransportOptimize Dashboard</h1>
+    </div>
+
+    <div class="sidebar">
+        <a href="#">Dashboard</a>
+        <a href="#">Transport Analytics</a>
+        <a href="#">Traffic Prediction</a>
+        <a href="#">CO2 Emission</a>
+        <a href="#">Settings</a>
+        <a href="#" class="logout-button">Logout</a>
+    </div>
+
+    <div class="content">
+    
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <h3>Total Users</h3>
+                <p>1,245</p>
+            </div>
+            <div class="stat-card">
+                <h3>Active Transports</h3>
+                <p>320</p>
+            </div>
+            <div class="stat-card">
+                <h3>Predicted Traffic</h3>
+                <p>87%</p>
+            </div>
+            <div class="stat-card">
+                <h3>CO2 Emission</h3>
+                <p>1200 kg/day</p>
+            </div>
+        </div>
+
+
+        <div class="section">
+            <h2>Transport Analytics Overview</h2>
+            <p>Here you can view detailed analytics on the transportation network, such as the most used routes, peak travel times, and optimization opportunities. This information helps in enhancing the efficiency of the transport system and reducing traffic congestion.</p>
+        </div>
+
+        <div class="section">
+            <h2>CO2 Emission Prediction</h2>
+            <p>This section provides insights into the CO2 emissions from the transportation network. By predicting emissions, the system helps in planning for greener and more sustainable travel options.</p>
+        </div>
+        <div class="section">
+            <h2>Traffic Prediction</h2>
+            <p>The system analyzes traffic data and predicts upcoming traffic levels, helping transport operators and passengers to plan their journeys more efficiently. Accurate traffic predictions can help reduce delays and improve overall transportation network efficiency.</p>
+        </div>
+
+    </div>
+
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransportOptimize Dashboard</title>
+    <link rel="stylesheet" href="templates/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+</head>
+<body>
+    <nav>
+        <div class="menu-btn" id="menuBtn">
+            <div class="menu-btn__burger"></div>
+        </div>
+        <div class="logo">TransportOptimize</div>
+    </nav>
+
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li><a href="#maintenance"><i class="fas fa-tools"></i> Maintenance</a></li>
+            <li><a href="#maintenance"><i class="fas fa-tools"></i> Maintenance</a></li>
+            <li><a href="C:\Users\priya\LOSER BUZZONEARTH\templates\intex.html"><i class="fas fa-chart-line"></i> Demand</a></li>
+            <li><a href="co2_prediction.html" id="co2-link"><i class="fas fa-leaf"></i> CO2</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <h1>Dashboard</h1>
+        <div class="input-container">
+            <input type="text" id="destination" placeholder="Destination">
+        </div>
+        <button class="submit-btn">Submit</button>
+
+    
+        <div class="real-time-data">
+            <h2>Real-Time Data</h2>
+            <div id="realTimeContent">
+                              <table border="1" id="data-table">
+                    <tr>
+                        <th>Field</th>
+                        <th>Value</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <section class="about-us">
+            <h2>About Us</h2>
+            <p>TransportOptimize is a cutting-edge platform designed to revolutionize the transportation industry...</p>
+        </section>
+    </div>
+
+    <div class="chatbot-icon" id="chatbotIcon">
+        <i class="fas fa-comments"></i>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@transportoptimize.com</p>
+                <p>Phone: +1 (555) 123-4567</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 TransportOptimize. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Menu and sidebar toggle logic
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const chatbotIcon = document.getElementById('chatbotIcon');
+
+        menuBtn.addEventListener('click', function() {
+            menuBtn.classList.toggle('open');
+            sidebar.classList.toggle('active');
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+                sidebar.classList.remove('active');
+                menuBtn.classList.remove('open');
+            }
+        });
+
+        sidebar.addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+
+        chatbotIcon.addEventListener('click', function() {
+            alert('Chatbot functionality coming soon!');
+        });
+
+        // Socket.IO setup to receive real-time data from Firebase
+        var socket = io();  // Connect to the Socket.IO server
+
+        socket.on('firebase_update', function (firebase_data) {
+            // Clear the existing table rows (except headers)
+            const table = document.getElementById('data-table');
+            while (table.rows.length > 1) {
+                table.deleteRow(1);
+            }
+
+            // Add rows with the updated data
+            for (const [key, value] of Object.entries(firebase_data)) {
+                const row = table.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                cell1.innerHTML = key;
+                cell2.innerHTML = value;
+            }
+        });
+    </script>
+</body>
+</html>
+-->
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransportOptimize Dashboard</title>
+    <link rel="stylesheet" href="templates/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+</head>
+<body>
+    <nav>
+        <div class="menu-btn" id="menuBtn">
+            <div class="menu-btn__burger"></div>
+        </div>
+        <div class="logo">TransportOptimize</div>
+    </nav>
+
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li><a href="#maintenance"><i class="fas fa-tools"></i> Maintenance</a></li>
+            <li><a href="#maintenance"><i class="fas fa-tools"></i> Maintenance</a></li>
+            <li><a href="intex.html"><i class="fas fa-chart-line"></i> Demand</a></li>
+            <li><a href="co2_prediction.html" id="co2-link"><i class="fas fa-leaf"></i> CO2</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <h1>Dashboard</h1>
+        <div class="input-container">
+            <input type="text" id="destination" placeholder="Destination">
+        </div>
+        <button class="submit-btn">Submit</button>
+
+        
+        <div class="real-time-data">
+            <h2>Real-Time Data</h2>
+            <div id="realTimeContent">
+                              <table border="1" id="data-table">
+                    <tr>
+                        <th>Field</th>
+                        <th>Value</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <section class="about-us">
+            <h2>About Us</h2>
+            <p>TransportOptimize is a cutting-edge platform designed to revolutionize the transportation industry...</p>
+        </section>
+    </div>
+
+    <div class="chatbot-icon" id="chatbotIcon">
+        <i class="fas fa-comments"></i>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@transportoptimize.com</p>
+                <p>Phone: +1 (555) 123-4567</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>  
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 TransportOptimize. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Menu and sidebar toggle logic
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const chatbotIcon = document.getElementById('chatbotIcon');
+
+        menuBtn.addEventListener('click', function() {
+            menuBtn.classList.toggle('open');
+            sidebar.classList.toggle('active');
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+                sidebar.classList.remove('active');
+                menuBtn.classList.remove('open');
+            }
+        });
+
+        sidebar.addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+
+        chatbotIcon.addEventListener('click', function() {
+            alert('Chatbot functionality coming soon!');
+        });
+
+        // Socket.IO setup to receive real-time data from Firebase
+        var socket = io();  // Connect to the Socket.IO server
+
+        socket.on('firebase_update', function (firebase_data) {
+            // Clear the existing table rows (except headers)
+            const table = document.getElementById('data-table');
+            while (table.rows.length > 1) {
+                table.deleteRow(1);
+            }
+
+            // Add rows with the updated data
+            for (const [key, value] of Object.entries(firebase_data)) {
+                const row = table.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                cell1.innerHTML = key;
+                cell2.innerHTML = value;
+            }
+        });
+    </script>
+</body>
+</html>
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransportOptimize Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+    <style>
+
+        /* Base Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        /* Navbar */
+        nav {
+            background-color: #2d3e50;
+            padding: 10px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background-color: #34495e;
+            width: 250px;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: -250px;
+            transition: left 0.3s;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            padding: 15px;
+            border-bottom: 1px solid #2c3e50;
+        }
+
+        .sidebar ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+        }
+
+        /* Menu Button */
+        .menu-btn {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .menu-btn__burger, .menu-btn__burger::before, .menu-btn__burger::after {
+            content: '';
+            width: 25px;
+            height: 2px;
+            background-color: #fff;
+            transition: all 0.3s;
+        }
+
+        .menu-btn.open .menu-btn__burger {
+            transform: rotate(45deg);
+        }
+
+        .menu-btn.open .menu-btn__burger::before {
+            transform: rotate(90deg) translateY(-9px);
+        }
+
+        .menu-btn.open .menu-btn__burger::after {
+            transform: rotate(90deg) translateY(9px);
+        }
+
+        /* Content Section */
+        .content {
+            margin-left: 270px;
+            padding: 20px;
+        }
+
+        .content h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .input-container {
+            margin-bottom: 20px;
+        }
+
+        .input-container input {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .submit-btn {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+
+        /* Real-Time Data Section */
+        .real-time-data {
+            margin-top: 30px;
+        }
+
+        .real-time-data table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .real-time-data th, .real-time-data td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .real-time-data th {
+            background-color: #f4f4f4;
+        }
+
+        /* Chatbot Icon */
+        .chatbot-icon {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #3498db;
+            color: white;
+            padding: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #2d3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .footer-section {
+            width: 30%;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 15px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-section ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+        }
+
+        .footer-bottom {
+            margin-top: 20px;
+            border-top: 1px solid #34495e;
+            padding-top: 10px;
+        }
+
+        .social-icons a {
+            margin-right: 10px;
+            color: #ecf0f1;
+        }
+
+        .social-icons a:hover {
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="menu-btn" id="menuBtn">
+            <div class="menu-btn__burger"></div>
+        </div>
+        <div class="logo">TransportOptimize</div>
+    </nav>
+
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li><a href="#maintenance"><i class="fas fa-tools"></i> Maintenance</a></li>
+            <li><a href="intex.html"><i class="fas fa-chart-line"></i> Demand</a></li>
+            <li><a href="{{ url_for('co2_prediction') }}" id="co2-link"><i class="fas fa-leaf"></i> CO2</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <h1>Dashboard</h1>
+        <div class="input-container">
+            <input type="text" id="destination" placeholder="Destination">
+        </div>
+        <button class="submit-btn">Submit</button>
+
+        <!-- Real-Time Data Section -->
+        <div class="real-time-data">
+            <h2>Real-Time Data</h2>
+            <div id="realTimeContent">
+                <!-- Real-time vehicle data table will be inserted here -->
+                <table border="1" id="data-table">
+                    <tr>
+                        <th>Field</th>
+                        <th>Value</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <section class="about-us">
+            <h2>About Us</h2>
+            <p>TransportOptimize is a cutting-edge platform designed to revolutionize the transportation industry...</p>
+        </section>
+    </div>
+
+    <div class="chatbot-icon" id="chatbotIcon">
+        <i class="fas fa-comments"></i>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@transportoptimize.com</p>
+                <p>Phone: +1 (555) 123-4567</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>  
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 TransportOptimize. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Sidebar toggle
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const chatbotIcon = document.getElementById('chatbotIcon');
+
+        menuBtn.addEventListener('click', function() {
+            menuBtn.classList.toggle('open');
+            sidebar.classList.toggle('active');
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+                sidebar.classList.remove('active');
+                menuBtn.classList.remove('open');
+            }
+        });
+
+        sidebar.addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+
+        chatbotIcon.addEventListener('click', function() {
+            alert('Chatbot functionality coming soon!');
+        });
+
+        // Socket.IO setup to receive real-time data from Firebase
+        var socket = io();  // Connect to the Socket.IO server
+
+        socket.on('firebase_update', function (firebase_data) {
+            const table = document.getElementById('data-table');
+            while (table.rows.length > 1) {
+                table.deleteRow(1);
+            }
+
+            for (const [key, value] of Object.entries(firebase_data)) {
+                const row = table.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                cell1.innerHTML = key;
+                cell2.innerHTML = value;
+            }
+        });
+    </script>
+</body>
+</html>
+<li><a href="{{ url_for('co2_prediction') }}" id="co2-link"><i class="fas fa-leaf"></i> CO2</a></li>

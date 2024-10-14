@@ -1,0 +1,239 @@
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransportOptimize Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <nav>
+        <div class="menu-btn" id="menuBtn">
+            <div class="menu-btn__burger"></div>
+        </div>
+        <div class="logo">TransportOptimize</div>
+    </nav>
+
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li><a href="#maintenance"><i class="fas fa-tools"></i> Maintenance</a></li>
+            <li><a href="#maintenance"><i class="fas fa-tools"></i> Maintenance</a></li>
+            <li><a href="C:\Users\priya\LOSER BUZZONEARTH\templates\intex.html"><i class="fas fa-chart-line"></i> Demand</a></li>
+            <li><a href="co2_prediction.html" id="co2-link"><i class="fas fa-leaf"></i> CO2</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <h1>Dashboard</h1>
+        <div class="input-container">
+            <input type="text" id="destination" placeholder="Destination">
+        </div>
+        <button class="submit-btn">Submit</button>
+
+        <div class="real-time-data">
+            <h2>Real-Time Data</h2>
+            <div id="realTimeContent">
+            
+            </div>
+        </div>
+
+        <section class="about-us">
+            <h2>About Us</h2>
+            <p>TransportOptimize is a cutting-edge platform designed to revolutionize the transportation industry...</p>
+        </section>
+    </div>
+
+    <div class="chatbot-icon" id="chatbotIcon">
+        <i class="fas fa-comments"></i>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@transportoptimize.com</p>
+                <p>Phone: +1 (555) 123-4567</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 TransportOptimize. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const chatbotIcon = document.getElementById('chatbotIcon');
+
+        menuBtn.addEventListener('click', function() {
+            menuBtn.classList.toggle('open');
+            sidebar.classList.toggle('active');
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+                sidebar.classList.remove('active');
+                menuBtn.classList.remove('open');
+            }
+        });
+
+        sidebar.addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+
+        chatbotIcon.addEventListener('click', function() {
+            alert('Chatbot functionality coming soon!');
+        });
+    </script>
+</body>
+</html>
+-->
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransportOptimize Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script> <!-- Include Socket.IO library -->
+</head>
+<body>
+    <nav>
+        <div class="menu-btn" id="menuBtn">
+            <div class="menu-btn__burger"></div>
+        </div>
+        <div class="logo">TransportOptimize</div>
+    </nav>
+
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li><a href="#maintenance"><i class="fas fa-tools"></i> Maintenance</a></li>
+            <li><a href="#maintenance"><i class="fas fa-tools"></i> Maintenance</a></li>
+            <li><a href="C:\Users\priya\LOSER BUZZONEARTH\templates\intex.html"><i class="fas fa-chart-line"></i> Demand</a></li> 
+            <li><a href="co2_prediction.html" id="co2-link"><i class="fas fa-leaf"></i> CO2</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <h1>Dashboard</h1>
+        <div class="input-container">
+            <input type="text" id="destination" placeholder="Destination">
+        </div>
+        <button class="submit-btn">Submit</button>
+
+        <div class="real-time-data">
+            <h2>Real-Time Data</h2>
+            <div id="realTimeContent">
+                <!-- Real-time data will be inserted here -->
+            </div>
+        </div>
+
+        <section class="about-us">
+            <h2>About Us</h2>
+            <p>TransportOptimize is a cutting-edge platform designed to revolutionize the transportation industry...</p>
+        </section>
+    </div>
+
+    <div class="chatbot-icon" id="chatbotIcon">
+        <i class="fas fa-comments"></i>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@transportoptimize.com</p>
+                <p>Phone: +1 (555) 123-4567</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 TransportOptimize. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Socket.IO client
+        const socket = io();
+
+        // Listen for Firebase data updates
+        socket.on('firebase_update', function(data) {
+            const realTimeContent = document.getElementById('realTimeContent');
+            realTimeContent.innerHTML = ''; // Clear previous content
+
+            // Dynamically create and insert the updated data into the DOM
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    const item = document.createElement('p');
+                    item.textContent = `${key}: ${data[key]}`;
+                    realTimeContent.appendChild(item);
+                });
+            } else {
+                realTimeContent.textContent = 'No data available';
+            }
+        });
+
+        // Sidebar menu toggle
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const chatbotIcon = document.getElementById('chatbotIcon');
+
+        menuBtn.addEventListener('click', function() {
+            menuBtn.classList.toggle('open');
+            sidebar.classList.toggle('active');
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+                sidebar.classList.remove('active');
+                menuBtn.classList.remove('open');
+            }
+        });
+
+        sidebar.addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+
+        chatbotIcon.addEventListener('click', function() {
+            alert('Chatbot functionality coming soon!');
+        });
+    </script>
+</body>
+</html>
